@@ -1,0 +1,31 @@
+using Mig;
+using Newtonsoft.Json;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Mig.Core
+{
+    public class MigTilingElement : MigElement
+    {
+        [JsonIgnore]
+        public Vector2 CurrentTiling;
+        public override void Apply()
+        {
+            var meshRender = this.gameObject.GetComponent<Renderer>();
+            if (meshRender != null)
+            {
+                meshRender.material.mainTextureScale = CurrentTiling;
+            }
+        }
+
+        public override void Record()
+        {
+            if (renderer)
+            {
+                CurrentTiling = renderer.material.mainTextureScale;
+            }
+        }
+    }
+}
+
