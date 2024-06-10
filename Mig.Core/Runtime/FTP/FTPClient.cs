@@ -40,7 +40,6 @@ namespace Mig.Core
         public static IEnumerator UploadFiles(string ftpPath, string localPath, string fileName, Action<bool> callback)
         {
             //path = "ftp://" + UserUtil.serverip + path;
-            string errorinfo = "";//错误信息
             float percent = 0;//进度百分比
             FileInfo f = new FileInfo(localPath);
             localPath = localPath.Replace("\\", "/");
@@ -79,7 +78,6 @@ namespace Mig.Core
                 //释放资源
                 stream.Close();
                 fs.Close();
-                errorinfo = "完成";
 
                 callback?.Invoke(true);
                 yield break;
@@ -120,9 +118,7 @@ namespace Mig.Core
             reqFtp.ContentLength = ftpStream.Length;//本地上传文件的长度
             int buffLength = 2048;//缓冲区大小
             byte[] buff = new byte[buffLength];//缓冲区
-            int contentLen;//存放读取文件的二进制流
             int allByte = (int)ftpStream.Length;
-            int startByte = 0;
             try
             {
                 using (Stream stream = reqFtp.GetRequestStream())
@@ -169,7 +165,7 @@ namespace Mig.Core
                     while (currentIndex < bytes.Length)
                     {
                         int copyCount = Mathf.Min(bytes.Length, buffLength);
-                        stream.Write(bytes, currentIndex, copyCount);
+                        await stream.WriteAsync(bytes, currentIndex, copyCount);
                         currentIndex += copyCount;
                     }
                 }
@@ -484,7 +480,8 @@ namespace Mig.Core
             }
             catch (Exception ex)
             {
-                //errorinfo = string.Format("因{0},无法下载", ex.Message);
+                var errorinfo = string.Format("因{0},无法下载", ex.Message);
+                Debug.Log(errorinfo);
                 return false;
             }
         }
