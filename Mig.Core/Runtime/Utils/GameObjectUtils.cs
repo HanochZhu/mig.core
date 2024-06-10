@@ -20,4 +20,24 @@ public static class GameObjectUtils
 
         return self.AddComponent<T>();
     }
+
+    public static List<T> GetComponentsInChildrenOnly<T>(this GameObject parent, bool includeInactive = false, bool recursive = true)
+    {
+        List<T> list = new List<T>();
+        if (parent != null)
+        {
+            foreach (Transform child in parent.transform)
+            {
+                if (child.TryGetComponent<T>(out _) && (includeInactive || child.gameObject.activeInHierarchy))
+                {
+                    list.AddRange(child.GetComponents<T>());
+                }
+                if (recursive && child.transform.childCount > 0)
+                {
+                    list.AddRange(child.gameObject.GetComponentsInChildrenOnly<T>(includeInactive, recursive));
+                }
+            }
+        }
+        return list;
+    }
 }
