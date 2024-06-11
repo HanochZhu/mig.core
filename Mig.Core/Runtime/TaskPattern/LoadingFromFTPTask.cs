@@ -23,7 +23,7 @@ namespace Mig.Core.TaskPattern
         {
             if (string.IsNullOrEmpty(downloadAddress) || string.IsNullOrEmpty(saveZipPath))
             {
-                Debug.Log($"You must set downloadAddress to saveZipPath before download");
+                Debug.LogWarning($"You must set downloadAddress to saveZipPath before download");
                 m_taskCallback?.Invoke(false);
                 return;
             }
@@ -31,7 +31,7 @@ namespace Mig.Core.TaskPattern
 
             if (!result)
             {
-                Debug.Log($"Failed to download file {downloadAddress} to {saveZipPath}");
+                Debug.LogError($"Failed to download file {downloadAddress} to {saveZipPath}");
                 m_taskCallback?.Invoke(false);
                 return;
             }
