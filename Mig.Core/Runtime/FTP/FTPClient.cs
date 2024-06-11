@@ -337,7 +337,7 @@ namespace Mig.Core
             }
             catch (Exception ex)
             {
-                Debug.Log($"Failed to download {fromAddress} {ex.Message}");
+                Debug.LogError($"Failed to download {fromAddress} {ex.Message}");
             }
             finally
             {
