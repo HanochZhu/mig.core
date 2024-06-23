@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Mig.Core
@@ -10,6 +8,11 @@ namespace Mig.Core
 
         public void ChangeState(IMigStateController controller)
         {
+            if(m_currentController == controller)
+            {
+                Debug.Log($"switch to same controller {controller.GetType()}");
+                return;
+            }
             if (m_currentController != null)
             {
                 m_currentController.Sleep();
