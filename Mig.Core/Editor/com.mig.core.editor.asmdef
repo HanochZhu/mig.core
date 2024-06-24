@@ -1,0 +1,16 @@
+{
+    "name": "com.mig.core.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d7259153911076b4dad5bdbe4696bbd0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
