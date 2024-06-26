@@ -32,5 +32,10 @@ namespace Mig.Core
         {
             elements.Add(element);
         }
+
+        public void RemoveElement(MigElement element)
+        {
+            elements.Remove(element);
+        }
     }
 }

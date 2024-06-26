@@ -18,11 +18,13 @@ public class MigElementWrapperEditor : Editor
     public override void OnInspectorGUI()
     {
         GUILayout.Label("Show Element");
+        GUILayout.Space(10);
         foreach (var element in wrapper.Elements)
         {
             GUILayout.Label(element.GameObjectPath);
-            GUILayout.Label(new GUIContent("OperateCount: " + element.OperateCount));
-            GUILayout.Label(new GUIContent("StepIndex   : " + element.StepIndex));
+            GUILayout.Label("> " + element.GetType().ToString());
+            GUILayout.Label("> " + new GUIContent("OperateCount: " + element.OperateCount));
+            GUILayout.Label("> " + new GUIContent("StepIndex   : " + element.StepIndex));
         }
     }
 }

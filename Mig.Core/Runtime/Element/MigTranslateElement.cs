@@ -9,17 +9,23 @@ namespace Mig.Core
     public class MigTranslateElement : MigElement
     {
         [JsonIgnore]
-        public Vector3 StepWorldPosition;
+        public Vector3 StepLocalPosition;
+        public Quaternion StepLocalRotation;
+        public Vector3 StepLocalScale;
 
 
         public override void Apply()
         {
-            this.transform.position = StepWorldPosition;
+            this.transform.localPosition = StepLocalPosition;
+            this.transform.localRotation = StepLocalRotation;
+            this.transform.localScale = StepLocalScale;
         }
 
         public override void Record()
         {
-            StepWorldPosition = this.transform.position;
+            StepLocalPosition = this.transform.localPosition;
+            StepLocalRotation = this.transform.localRotation;
+            StepLocalScale = this.transform.lossyScale;
         }
     }
 
