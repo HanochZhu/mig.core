@@ -8,7 +8,6 @@ namespace Mig.Core
 {
     public class MigTranslateElement : MigElement
     {
-        [JsonIgnore]
         public Vector3 StepLocalPosition;
         public Quaternion StepLocalRotation;
         public Vector3 StepLocalScale;
