@@ -8,8 +8,8 @@ namespace Mig.Core
 {
     public class MigMainTextureElement : MigElement
     {
-        [JsonIgnore]
-        public Texture CurrentTexture;
+
+        public Texture2D CurrentTexture;
         public override void Apply()
         {
             var meshRender = this.gameObject.GetComponent<Renderer>();
@@ -21,7 +21,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            CurrentTexture = renderer.material.mainTexture;
+            CurrentTexture = (Texture2D)renderer.material.mainTexture;
         }
     }
 
