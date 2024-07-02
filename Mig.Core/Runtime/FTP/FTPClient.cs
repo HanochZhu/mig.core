@@ -5,7 +5,9 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 namespace Mig.Core
@@ -18,6 +20,7 @@ namespace Mig.Core
         public static float uploadPercentage;//上传进度
         public static float downloadPercentage;//下载进度
         private static string ftpFileNamePattern = @"([^\s]+)\s*$";
+        private static string ftpDirNamePattern = @"([^\s]+)\s*$";
 
         /// <summary>
         /// File will store at server according to its upload user id
@@ -82,49 +85,51 @@ namespace Mig.Core
                 callback?.Invoke(true);
                 yield break;
             }
-            //catch (Exception ex)
-            //{
-            //    errorinfo = string.Format("无法完成上传" + ex.Message);
-            //    Debug.Log("[Mig::UploadFiles] Failed to upload to ftp server. " + errorinfo);
-
-            //    callback?.Invoke(false);
-            //    yield break;
-            //}
         }
 
 
         /// <summary>
         /// 文件上传到ftp
         /// </summary>
-        /// <param name="ftpPath">存储上传文件的ftp路径</param>
+        /// <param name="ftpFilePath">存储上传文件的ftp路径</param>
         /// <param name="localPath">上传文件的本地目录</param>
         /// <param name="fileName">上传文件名称</param>
         /// <returns></returns>
-        public static async Task UploadStream(string ftpPath, Stream ftpStream, string fileName, Action<bool> callback)
+        public static async Task UploadStream(string ftpFilePath, Stream localFileStream, Action<bool> callback)
         {
             // ftpStream where to create where to destroy
-            if (!ftpPath.StartsWith(FTPCONSTR))
+            if (!ftpFilePath.StartsWith(FTPCONSTR))
             {
-                Debug.Log("[Mig::FTPClient] Failed to upload to " + ftpPath);
+                Debug.Log("[Mig::FTPClient] Failed to upload to " + ftpFilePath);
                 callback.Invoke(false);
                 return;
             }
-            var saveAddress = Path.Combine(ftpPath, fileName);
-            FtpWebRequest reqFtp = (FtpWebRequest)WebRequest.Create(new Uri(saveAddress));
-            reqFtp.UseBinary = true;//代表可以发送图片
-            reqFtp.Credentials = new NetworkCredential(FTPUSERNAME, FTPPASSWORD);
-            reqFtp.KeepAlive = false;//在请求完成之后是否关闭到 FTP 服务器的控制连接
-            reqFtp.Method = WebRequestMethods.Ftp.UploadFile;//表示将文件上载到 FTP 服务器的 FTP STOR 协议方法
-            reqFtp.ContentLength = ftpStream.Length;//本地上传文件的长度
-            int buffLength = 2048;//缓冲区大小
-            byte[] buff = new byte[buffLength];//缓冲区
-            int allByte = (int)ftpStream.Length;
+            
             try
             {
-                using (Stream stream = reqFtp.GetRequestStream())
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(ftpFilePath);
+                request.Method = WebRequestMethods.Ftp.UploadFile;
+                request.Credentials = new NetworkCredential(FTPUSERNAME, FTPPASSWORD);
+                // 获取请求流  
+                using (Stream requestStream = request.GetRequestStream())
                 {
-                    ftpStream.Seek(0, SeekOrigin.Begin); // 将ftpStream的位置重置为开始位置
-                    await ftpStream.CopyToAsync(stream);
+                    byte[] buffer = new byte[1024 * 1024]; // 例如，1MB的缓冲区  
+                    int bytesRead;
+
+                    // 循环读取文件并写入请求流，直到读取完成  
+                    while ((bytesRead = localFileStream.Read(buffer, 0, buffer.Length)) != 0)
+                    {
+                        await requestStream.WriteAsync(buffer, 0, bytesRead);
+                    }
+
+                    // 刷新数据以确保所有数据都已发送  
+                    requestStream.Flush();
+                }
+
+                // 获取FTP响应  
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                {
+                    Console.WriteLine($"Upload File Complete, status {response.StatusDescription}");
                 }
 
                 callback?.Invoke(true);
@@ -140,40 +145,32 @@ namespace Mig.Core
         /// <summary>
         /// 文件上传到ftp
         /// </summary>
-        /// <param name="ftpPath">存储上传文件的ftp路径</param>
+        /// <param name="ftpFilePath">存储上传文件的ftp路径</param>
         /// <param name="localPath">上传文件的本地目录</param>
         /// <param name="fileName">上传文件名称</param>
         /// <returns></returns>
-        public static async Task UploadBytes(string ftpPath, Byte[] bytes, string fileName, Action<bool> callback)
+        public static async Task UploadBytes(string ftpFilePath, Byte[] bytes, Action<bool> callback)
         {
             // ftpStream where to create where to destroy
-            if (!ftpPath.StartsWith(FTPCONSTR))
+            if (!ftpFilePath.StartsWith(FTPCONSTR))
             {
-                Debug.Log("[Mig::FTPClient] Failed to upload to " + ftpPath);
+                Debug.Log("[Mig::FTPClient] Failed to upload to " + ftpFilePath);
                 callback.Invoke(false);
                 return;
             }
-            var saveAddress = Path.Combine(ftpPath, fileName);
 
-            var ftpRequest = CreateAFtpRequest(saveAddress, bytes.Length);
-            int buffLength = 1024 * 1024;//缓冲区大小 4k
-            int currentIndex = 0;
+            var ftpRequest = CreateAFtpRequest(ftpFilePath, bytes.Length);
             try
             {
                 using (Stream stream = ftpRequest.GetRequestStream())
                 {
-                    while (currentIndex < bytes.Length)
-                    {
-                        int copyCount = Mathf.Min(bytes.Length, buffLength);
-                        await stream.WriteAsync(bytes, currentIndex, copyCount);
-                        currentIndex += copyCount;
-                    }
+                    await stream.WriteAsync(bytes, 0, bytes.Length);
                 }
                 callback?.Invoke(true);
             }
             catch (Exception ex)
             {
-                Debug.Log($"[Mig::UploadFiles] Failed to upload to ftp server {saveAddress}. Error: {ex.Message}");
+                Debug.Log($"[Mig::UploadFiles] Failed to upload to ftp server {ftpFilePath}. Error: {ex.Message}");
                 ftpRequest.Abort();
                 callback?.Invoke(false);
                 return ;
@@ -275,7 +272,7 @@ namespace Mig.Core
         /// <param name="savePath">保存本地的地址</param>
         /// <param name="fileName">保存的名字</param>
         /// <returns></returns>
-        public static async Task<byte[]> DownloadToBytesAsync(string fromAddress)
+        public static async Task<byte[]> DownloadToBytesAsync(string fromAddress, CancellationToken token)
         {
             FtpWebRequest reqFtp = null;
 
@@ -289,14 +286,18 @@ namespace Mig.Core
                 using (Stream responseStream = response.GetResponseStream())
                 using (MemoryStream outputStream = new MemoryStream())
                 {
-
                     long memoryLength = (long)GetFileSize(fromAddress);//文件大小
+                    if (memoryLength == -1)
+                    {
+                        throw new Exception($"File {fromAddress} is not exit"); 
+                    }
 
-                    await responseStream.CopyToAsync(outputStream);
+                    await responseStream.CopyToAsync(outputStream, token);
 
                     return outputStream.ToArray();
                 }
             }
+            
             catch (Exception ex)
             {
                 Debug.Log($"无法下载 {fromAddress} {ex.Message}");
@@ -363,10 +364,24 @@ namespace Mig.Core
                 reqFtp.UseBinary = true;//二进制流
                 reqFtp.Credentials = new NetworkCredential(FTPUSERNAME, FTPPASSWORD);//设置访问用户名，密码
                 reqFtp.Method = WebRequestMethods.Ftp.GetFileSize;//1.Method设置或获取对文集进行的操作（上传，下载，删除等）  2.GetFileSize检索 FTP 服务器上的文件大小的 FTP SIZE 协议方法
-                FtpWebResponse response = (FtpWebResponse)reqFtp.GetResponse();//返回ftp服务器反应 用于转换成FtpWebResponse
-                fileSize = response.ContentLength;//文件长度
+                using (FtpWebResponse response = (FtpWebResponse)reqFtp.GetResponse())
+                {
+                    fileSize = response.ContentLength;//文件长度
+                }//返回ftp服务器反应 用于转换成FtpWebResponse
 
-                response.Close();//释放资源
+            }
+            catch (WebException ex)
+            {
+                // 检查异常是否是因为文件不存在  
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response is FtpWebResponse)
+                {
+                    FtpWebResponse errorResponse = (FtpWebResponse)ex.Response;
+                    if (errorResponse.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                    {
+                        // 文件不存在  
+                        return -1;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -380,29 +395,25 @@ namespace Mig.Core
         /// <summary>
         ///在ftp服务器上创建文件目录
         /// </summary>
-        /// <param name="dirName">文件目录</param>
+        /// <param name="ftpDirPath">文件目录</param>
         /// <returns></returns>
-        public static bool MakeDir(string dirName)
+        public static bool MakeDir(string ftpDirPath)
         {
             try
             {
-                string uri = (FTPCONSTR + dirName + "/");
-                if (DirectoryIsExist(uri))
+                if (DirectoryIsExist(ftpDirPath))
                 {
+                    Debug.Log($"{ftpDirPath} has already exit");
                     return true;
                 }
 
-                string url = FTPCONSTR + dirName;
-                FtpWebRequest reqFtp = (FtpWebRequest)WebRequest.Create(new Uri(url));
+                FtpWebRequest reqFtp = (FtpWebRequest)WebRequest.Create(new Uri(ftpDirPath));
                 reqFtp.UseBinary = true;
-
-                // reqFtp.KeepAlive = false;
                 reqFtp.Method = WebRequestMethods.Ftp.MakeDirectory;
                 reqFtp.Credentials = new NetworkCredential(FTPUSERNAME, FTPPASSWORD);
 
-                FtpWebResponse response = (FtpWebResponse)reqFtp.GetResponse();
+                using (FtpWebResponse response = (FtpWebResponse)reqFtp.GetResponse()) ;
 
-                response.Close();
                 return true;
             }
             catch (Exception ex)
@@ -416,40 +427,32 @@ namespace Mig.Core
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>        
-        public static bool DirectoryIsExist(string uri)
+        public static bool DirectoryIsExist(string ftpDirPath)
         {
-            string[] value = GetFileList(uri);
-            if (value == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return GetFileList(ftpDirPath).Length > 0;
         }
-        private static string[] GetFileList(string uri)
+
+        private static string[] GetFileList(string ftpDirPath)
         {
-            StringBuilder result = new StringBuilder();
+            List<string> result = new();
             try
             {
-                FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(uri);
+                FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(ftpDirPath);
                 reqFTP.UseBinary = true;
                 reqFTP.Credentials = new NetworkCredential(FTPUSERNAME, FTPPASSWORD);
                 reqFTP.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
 
-                WebResponse response = reqFTP.GetResponse();
-                StreamReader reader = new StreamReader(response.GetResponseStream());
-                string line = reader.ReadLine();
-                while (line != null)
+                using (WebResponse response = reqFTP.GetResponse())
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
-                    result.Append(line);
-                    result.Append("\n");
-                    line = reader.ReadLine();
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+                        Debug.Log(line);
+                        result.Add(line);
+                    }
                 }
-                reader.Close();
-                response.Close();
-                return result.ToString().Split('\n');
+                return result.ToArray();
             }
             catch
             {
@@ -491,38 +494,38 @@ namespace Mig.Core
         /// <summary>
         /// 从ftp服务器上获得文件夹列表
         /// </summary>
-        /// <param name="RequestPath">服务器下的相对路径</param>
+        /// <param name="requestAddress">服务器下的相对路径</param>
         /// <returns></returns>
-        public static List<string> GetFtpDir(string RequestPath)
+        public static List<string> GetFTPDirList(string requestAddress)
         {
             List<string> result = new List<string>();
             try
             {
-                string uri = FTPCONSTR + RequestPath;   //根路径+路径
-                FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(new Uri(uri));
+                FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(new Uri(requestAddress));
                 // ftp用户名和密码
                 reqFTP.Credentials = new NetworkCredential(FTPUSERNAME, FTPPASSWORD);
                 reqFTP.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
-                WebResponse response = reqFTP.GetResponse();
-                StreamReader reader = new StreamReader(response.GetResponseStream());//中文文件名
 
-                string line = reader.ReadLine();
-                while (line != null)
+                using (WebResponse response = reqFTP.GetResponse())
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))//中文文件名
                 {
-                    if (line.Contains("<DIR>"))
+                    while (!reader.EndOfStream)
                     {
-                        string msg = line.Substring(line.LastIndexOf("<DIR>") + 5).Trim();
-                        result.Add(msg);
+                        var line = reader.ReadLine();
+                        Match match = Regex.Match(line, ftpDirNamePattern);
+                        if (!match.Success)
+                        {
+                            Debug.LogError($"Failed to match regex. {line}");
+                            continue;
+                        }
+                        result.Add(match.Value);
                     }
-                    line = reader.ReadLine();
                 }
-                reader.Close();
-                response.Close();
                 return result;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("获取目录出错：" + ex.Message);
+                Debug.LogError("[Mig] Failed to get dir list from website. Detail," + ex.Message);
             }
             return result;
         }
