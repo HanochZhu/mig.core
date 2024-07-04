@@ -24,7 +24,7 @@ public class MigElementWrapperEditor : Editor
             GUILayout.Label(element.GameObjectPath);
             GUILayout.Label("> " + element.GetType().ToString());
             GUILayout.Label("> " + new GUIContent("OperateCount: " + element.OperateCount));
-            GUILayout.Label("> " + new GUIContent("StepIndex   : " + element.StepIndex));
+            GUILayout.Label("> " + new GUIContent("StepGUID   : " + element.StepGUID));
         }
     }
 }

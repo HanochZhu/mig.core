@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using UnityEngine;
 
 
@@ -8,18 +9,16 @@ namespace Mig.Core
     {
         [JsonIgnore] public MigElementWrapper Wrapper;
 
-        [JsonProperty("stepIndex")] private int stepIndex;
+        [JsonProperty("stepGuid")] private Guid stepGuid;
         [JsonProperty("gameObjectPath")] private string gameObjectPath;
         public int OperateCount;
 
-
         [JsonIgnore]
-        public int StepIndex
+        public Guid StepGUID
         {
-            get => stepIndex;
-            internal set => stepIndex = value;
+            get => stepGuid;
+            internal set => stepGuid = value;
         }
-
 
         [JsonIgnore]
         public string GameObjectPath
@@ -36,14 +35,14 @@ namespace Mig.Core
         [JsonIgnore]
         public Renderer renderer => gameObject ? gameObject.GetComponent<Renderer>(): null;
 
-        public virtual void Init(int currentStep, string gameobjectPath)
+        public virtual void Init(string gameobjectPath, Guid currentGUID)
         {
 #if MIG_RUNTIME
         // TODO
 #else
             /// if in runtime mode, the step count should set by deserializer.
-            stepIndex = currentStep;// SnapshotManager.Instance.CurrentSnapshotIndex;
             GameObjectPath = gameobjectPath;// GameObjectExtensions.GetGameObjectTreePath(Wrapper.gameObject, ModelManager.Instance.CurrentGameObjectRoot.transform);
+            stepGuid = currentGUID;
 #endif
         }
 
