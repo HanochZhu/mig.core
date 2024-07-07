@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using TriLibCore.Mappers;
 
 namespace Mig.Snapshot
 {
