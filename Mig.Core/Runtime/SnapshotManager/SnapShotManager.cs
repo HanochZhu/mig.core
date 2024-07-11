@@ -73,23 +73,7 @@ namespace Mig.Snapshot
         /// </summary>
         public void AddSnapShotStepAtEnd()
         {
-            // update last snapshot first
-            UpdateSnapshotImage(CurrentSnapshotIndex);
-
-            SnapShotData snapShotData = new SnapShotData();
-            // TODO, we should use an additional camera to render snapshot
-
-            snapShotData.StepCount = CurrentSnapshotCount;
-            // only set guid at here
-            snapShotData.StepGuid = Guid.NewGuid();
-            snapShotData.Comment = string.Empty;
-
-            m_allSnapShotSteps.Add(snapShotData);
-            CurrentSnapshotIndex = CurrentSnapshotCount - 1;
-
-            UpdateSnapshotImage(CurrentSnapshotIndex);
-
-            OnSnapShotUpdated?.Invoke();
+            InsertSnapShotStepAfter(CurrentSnapshotIndex);
         }
 
         /// <summary>
@@ -138,54 +122,43 @@ namespace Mig.Snapshot
             snapShotData.StepGuid = Guid.NewGuid();
             snapShotData.Comment = string.Empty;
 
-            InsertSnapShotStepAt(afterIndex + 1, snapShotData);
+            if(CurrentSnapshotCount == 0)
+            {
+                InsertSnapShotStepAt(0, snapShotData);
+            }
+            else
+            {
+                SnapShotUtils.CloneAllSnapshot(m_allSnapShotSteps[afterIndex].StepGuid, snapShotData.StepGuid);
+                InsertSnapShotStepAt(afterIndex + 1, snapShotData);
+            }
         }
 
         public void InsertSnapShotStepAt(int index, SnapShotData snapshot)
         {
-            Debug.Assert(index < m_allSnapShotSteps.Count, $"[Mig::SnapshotManager] InsertSnapShotStepAt index {index} is out of range");
+            Debug.Assert(index < CurrentSnapshotCount, $"[Mig::SnapshotManager] InsertSnapShotStepAt index {index} is out of range");
 
             m_allSnapShotSteps.Insert(index, snapshot);
             CurrentSnapshotIndex = index;
-        }
-
-        public void PushBackSnapShotStep(SnapShotData snapshot)
-        {
-            m_allSnapShotSteps.Add(snapshot);
-            CurrentSnapshotIndex = CurrentSnapshotCount - 1;
         }
 
         public void ApplyToTargetSnapshot(int index)
         {
             Debug.Assert(index != CurrentSnapshotCount, $"[Mig::ApplyToNextSnapShot] gameobejct root is null, or {index} equals to CurrentSnapshotCount {CurrentSnapshotCount}");
 
+            if(index > CurrentSnapshotIndex)
+            {
+                index %= CurrentSnapshotCount;
+            }
+            else if(index < CurrentSnapshotIndex && index < 0)
+            {
+                index = CurrentSnapshotCount - 1;
+            }
+
             var applySnapshot = m_allSnapShotSteps[index];
 
             SnapShotUtils.ApplyToSnapshot(applySnapshot.StepGuid);
 
             CurrentSnapshotIndex = index;
-        }
-
-        public void ApplyToNextSnapShot(GameObject root)
-        {
-            CurrentSnapshotIndex = (CurrentSnapshotIndex + 1) % CurrentSnapshotCount;
-            SnapShotUtils.ApplyToSnapshot(m_allSnapShotSteps[CurrentSnapshotIndex].StepGuid);
-        }
-
-        public void ApplyToPreviousSnapshot()
-        {
-            CurrentSnapshotIndex--;
-            if (CurrentSnapshotIndex < 0)
-            {
-                CurrentSnapshotIndex = CurrentSnapshotCount - 1;
-            }
-            SnapShotUtils.ApplyToSnapshot(m_allSnapShotSteps[CurrentSnapshotIndex].StepGuid);
-        }
-
-        public bool DeleteSnapShotStep(int index)
-        {
-            // todo
-            return true;
         }
 
         public SnapShotData GetSnapShotStep(int index) => m_allSnapShotSteps[index];
