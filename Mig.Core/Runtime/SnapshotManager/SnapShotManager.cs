@@ -135,7 +135,6 @@ namespace Mig.Snapshot
 
         public void InsertSnapShotStepAt(int index, SnapShotData snapshot)
         {
-            Debug.Assert(index < CurrentSnapshotCount, $"[Mig::SnapshotManager] InsertSnapShotStepAt index {index} is out of range");
 
             m_allSnapShotSteps.Insert(index, snapshot);
             CurrentSnapshotIndex = index;
@@ -143,8 +142,6 @@ namespace Mig.Snapshot
 
         public void ApplyToTargetSnapshot(int index)
         {
-            Debug.Assert(index != CurrentSnapshotCount, $"[Mig::ApplyToNextSnapShot] gameobejct root is null, or {index} equals to CurrentSnapshotCount {CurrentSnapshotCount}");
-
             if(index > CurrentSnapshotIndex)
             {
                 index %= CurrentSnapshotCount;
