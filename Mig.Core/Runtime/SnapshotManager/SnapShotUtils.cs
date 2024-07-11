@@ -51,5 +51,23 @@ namespace Mig.Snapshot
                 wrapper.Elements.RemoveAll(e => e.StepGUID == guid);
             });
         }
+
+        public static void CloneAllSnapshot(Guid from, Guid to)
+        {
+            var wrappers = MigElementWrapper.WrapperRoot.GetComponentsInChildrenOnly<MigElementWrapper>();
+
+            wrappers.ForEach((wrapper) =>
+            {
+                wrapper.Elements.Where((a)=> a.StepGUID == from)
+                .Select((a)=> a.Clone())
+                .ToList()
+                .ForEach(e=>
+                {
+                    e.Wrapper = wrapper;
+                    wrapper.PushBackElement(e);
+                    e.StepGUID = to;
+                });
+            });
+        }
     }
 }
