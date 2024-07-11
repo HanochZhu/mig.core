@@ -20,6 +20,14 @@ namespace Mig.Core
             }
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigNormalMaplement();
+            clone.CurrentNormalMap = this.CurrentNormalMap; 
+            clone.GameObjectPath = this.GameObjectPath;
+            return clone;
+        }
+
         public override void Record()
         {
             if (renderer)

@@ -19,6 +19,14 @@ namespace Mig.Core
             }
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigOffsetElement();
+            clone.CurrentOffset = this.CurrentOffset;
+            clone.GameObjectPath = this.GameObjectPath;
+            return clone;
+        }
+
         public override void Record()
         {
             if (renderer)

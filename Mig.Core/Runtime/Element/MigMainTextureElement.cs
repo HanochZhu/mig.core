@@ -19,6 +19,14 @@ namespace Mig.Core
             }
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigMainTextureElement();
+            clone.CurrentTexture = this.CurrentTexture;
+            clone.GameObjectPath = this.GameObjectPath;
+            return clone;
+        }
+
         public override void Record()
         {
             CurrentTexture = (Texture2D)renderer.material.mainTexture;

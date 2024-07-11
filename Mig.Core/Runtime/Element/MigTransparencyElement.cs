@@ -19,6 +19,14 @@ namespace Mig.Core
             }
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigTransparencyElement();
+            clone.CurrentTransparency = this.CurrentTransparency;   
+            clone.GameObjectPath = this.GameObjectPath;
+            return clone;
+        }
+
         public override void Record()
         {
             if (renderer)

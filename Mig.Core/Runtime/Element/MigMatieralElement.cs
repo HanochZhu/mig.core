@@ -20,6 +20,14 @@ namespace Mig.Core
             }
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigMaterialElement();
+            clone.CurrentMaterial = this.CurrentMaterial;
+            clone.GameObjectPath = this.GameObjectPath;
+            return clone;
+        }
+
         public override void Record()
         {
             var meshRender = this.gameObject.GetComponent<Renderer>();

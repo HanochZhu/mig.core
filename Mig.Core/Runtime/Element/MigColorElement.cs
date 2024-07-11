@@ -14,6 +14,14 @@ namespace Mig.Core
             }
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigColorElement();
+            clone.CurrentMaterialColor = CurrentMaterialColor;
+            clone.GameObjectPath = GameObjectPath;
+            return clone;
+        }
+
         public override void Record()
         {
             if (renderer)
@@ -21,6 +29,7 @@ namespace Mig.Core
                 CurrentMaterialColor = renderer.material.color;
             }
         }
+
     }
 
 }

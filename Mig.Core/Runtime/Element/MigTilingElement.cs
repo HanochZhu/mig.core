@@ -19,6 +19,14 @@ namespace Mig.Core
             }
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigTilingElement();
+            clone.CurrentTiling = CurrentTiling;    
+            clone.GameObjectPath = GameObjectPath;
+            return clone;
+        }
+
         public override void Record()
         {
             if (renderer)

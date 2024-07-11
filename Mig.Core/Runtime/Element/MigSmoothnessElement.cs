@@ -17,6 +17,14 @@ namespace Mig.Core
             }
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigSmoothnessElement();
+            clone.CurrentSmoothness = this.CurrentSmoothness;
+            clone.GameObjectPath = this.GameObjectPath;
+            return clone;
+        }
+
         public override void Record()
         {
             if (this.renderer)

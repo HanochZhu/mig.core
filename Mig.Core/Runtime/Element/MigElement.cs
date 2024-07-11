@@ -52,6 +52,8 @@ namespace Mig.Core
         public abstract void Apply();
 
         public abstract void Record();
+
+        public abstract MigElement Clone();
     }
 
 }

@@ -18,6 +18,14 @@ namespace Mig.Core
             }
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigMetallicElement();
+            clone.CurrentMetallic = CurrentMetallic;
+            clone.GameObjectPath = GameObjectPath;
+            return clone;
+        }
+
         public override void Record()
         {
             if (renderer)

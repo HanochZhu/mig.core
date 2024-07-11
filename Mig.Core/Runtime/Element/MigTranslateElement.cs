@@ -20,6 +20,16 @@ namespace Mig.Core
             this.transform.localScale = StepLocalScale;
         }
 
+        public override MigElement Clone()
+        {
+            var clone = new MigTranslateElement();
+            clone.StepLocalScale = this.StepLocalScale;
+            clone.StepLocalPosition = this.StepLocalPosition;   
+            clone.StepLocalRotation = this.StepLocalRotation;
+            clone.GameObjectPath = this.GameObjectPath; 
+            return clone;
+        }
+
         public override void Record()
         {
             StepLocalPosition = this.transform.localPosition;
