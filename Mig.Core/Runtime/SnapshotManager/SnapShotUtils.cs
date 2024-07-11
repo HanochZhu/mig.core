@@ -28,9 +28,9 @@ namespace Mig.Snapshot
             return texture2D;
         }
 
-        public static void ApplyToSnapshot(GameObject root, Guid step)
+        public static void ApplyToSnapshot(Guid step)
         {
-            var elements = root.GetComponentsInChildrenOnly<MigElementWrapper>().SelectMany(es => es.Elements).ToList();
+            var elements = MigElementWrapper.WrapperRoot.GetComponentsInChildrenOnly<MigElementWrapper>().SelectMany(es => es.Elements).ToList();
 
             // first: revert all element to origin
             elements.Where(e => e.StepGUID == Guid.Empty)
@@ -42,9 +42,9 @@ namespace Mig.Snapshot
                     .ForEach(e => e.Apply());
         }
 
-        public static void DeleteAllSnapshotOf(GameObject root, Guid guid)
+        public static void DeleteAllSnapshotOf(Guid guid)
         {
-            var wrappers = root.GetComponentsInChildrenOnly<MigElementWrapper>();
+            var wrappers = MigElementWrapper.WrapperRoot.GetComponentsInChildrenOnly<MigElementWrapper>();
 
             wrappers.ForEach((wrapper) =>
             {

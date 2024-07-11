@@ -5,6 +5,8 @@ namespace Mig.Core
 {
     public class MigElementWrapper : MonoBehaviour
     {
+        public static GameObject WrapperRoot;
+
         private List<MigElement> elements = new();
 
         public MigElement this[int index]

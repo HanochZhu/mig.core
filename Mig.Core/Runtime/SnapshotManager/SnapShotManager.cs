@@ -96,7 +96,7 @@ namespace Mig.Snapshot
         /// delete current, then move forward
         /// </summary>
         /// <param name="index"></param>
-        public void DeleteSnapshotStepAt(int index, GameObject root)
+        public void DeleteSnapshotStepAt(int index)
         {
             Debug.Log($"[Mig] Delete snapshot at {index}");
 
@@ -107,7 +107,7 @@ namespace Mig.Snapshot
             }
             else if (index == 0 && CurrentSnapshotCount != 1)
             {
-                SnapShotUtils.DeleteAllSnapshotOf(root, m_allSnapShotSteps[0].StepGuid);
+                SnapShotUtils.DeleteAllSnapshotOf(m_allSnapShotSteps[0].StepGuid);
                 m_allSnapShotSteps.RemoveAt(index);
 
                 CurrentSnapshotIndex = 0;
@@ -115,7 +115,7 @@ namespace Mig.Snapshot
                 return;
             }
 
-            SnapShotUtils.DeleteAllSnapshotOf(root, m_allSnapShotSteps[index].StepGuid);
+            SnapShotUtils.DeleteAllSnapshotOf(m_allSnapShotSteps[index].StepGuid);
             m_allSnapShotSteps.RemoveAt(index);
 
             CurrentSnapshotIndex = index - 1;
@@ -155,35 +155,31 @@ namespace Mig.Snapshot
             CurrentSnapshotIndex = CurrentSnapshotCount - 1;
         }
 
-        public void ApplyToTargetSnapshot(int index, GameObject root)
+        public void ApplyToTargetSnapshot(int index)
         {
-            Debug.Assert(root && index != CurrentSnapshotCount, $"[Mig::ApplyToNextSnapShot] gameobejct root is null, or {index} equals to CurrentSnapshotCount {CurrentSnapshotCount}");
+            Debug.Assert(index != CurrentSnapshotCount, $"[Mig::ApplyToNextSnapShot] gameobejct root is null, or {index} equals to CurrentSnapshotCount {CurrentSnapshotCount}");
 
             var applySnapshot = m_allSnapShotSteps[index];
 
-            SnapShotUtils.ApplyToSnapshot(root, applySnapshot.StepGuid);
+            SnapShotUtils.ApplyToSnapshot(applySnapshot.StepGuid);
 
             CurrentSnapshotIndex = index;
         }
 
         public void ApplyToNextSnapShot(GameObject root)
         {
-            Debug.Assert(root, "[Mig::ApplyToNextSnapShot] gameobejct root is null, generate gameobject root first");
-
             CurrentSnapshotIndex = (CurrentSnapshotIndex + 1) % CurrentSnapshotCount;
-            SnapShotUtils.ApplyToSnapshot(root, m_allSnapShotSteps[CurrentSnapshotIndex].StepGuid);
+            SnapShotUtils.ApplyToSnapshot(m_allSnapShotSteps[CurrentSnapshotIndex].StepGuid);
         }
 
-        public void ApplyToPreviousSnapshot(GameObject root)
+        public void ApplyToPreviousSnapshot()
         {
-            Debug.Assert(root, "[Mig::ApplyToNextSnapShot] gameobejct root is null, generate gameobject root first");
-
             CurrentSnapshotIndex--;
             if (CurrentSnapshotIndex < 0)
             {
                 CurrentSnapshotIndex = CurrentSnapshotCount - 1;
             }
-            SnapShotUtils.ApplyToSnapshot(root, m_allSnapShotSteps[CurrentSnapshotIndex].StepGuid);
+            SnapShotUtils.ApplyToSnapshot(m_allSnapShotSteps[CurrentSnapshotIndex].StepGuid);
         }
 
         public bool DeleteSnapShotStep(int index)
