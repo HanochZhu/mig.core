@@ -135,9 +135,10 @@ namespace Mig.Snapshot
 
         public void InsertSnapShotStepAt(int index, SnapShotData snapshot)
         {
-
             m_allSnapShotSteps.Insert(index, snapshot);
             CurrentSnapshotIndex = index;
+            UpdateSnapshotImage(index);
+            OnSnapShotUpdated?.Invoke();
         }
 
         public void ApplyToTargetSnapshot(int index)
