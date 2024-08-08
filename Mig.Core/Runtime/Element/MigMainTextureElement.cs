@@ -12,11 +12,12 @@ namespace Mig.Core
         public Texture2D CurrentTexture;
         public override void Apply()
         {
-            var meshRender = this.gameObject.GetComponent<Renderer>();
-            if (meshRender != null)
+            if (migMaterial == null)
             {
-                meshRender.material.mainTexture = CurrentTexture;
+                Debug.LogError($"can not find render at {Wrapper.gameObject.name}");
+                return;
             }
+            migMaterial.mainTexture = CurrentTexture;
         }
 
         public override MigElement Clone()
@@ -29,7 +30,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            CurrentTexture = (Texture2D)renderer.material.mainTexture;
+            CurrentTexture = (Texture2D)migMaterial.mainTexture;
         }
     }
 

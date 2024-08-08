@@ -64,7 +64,7 @@ namespace Mig.Snapshot
                 return;
             }
             var currentSnapShot = m_allSnapShotSteps[index];
-            var image = SnapShotUtils.TakeScreenshotForStepThumbail(Camera.main, 520, 480);
+            var image = SnapShotManager.TakeScreenshotForStepThumbnail(Camera.main, 520, 480);
             currentSnapShot.Image = image;
         }
 
@@ -91,7 +91,7 @@ namespace Mig.Snapshot
             }
             else if (index == 0 && CurrentSnapshotCount != 1)
             {
-                SnapShotUtils.DeleteAllSnapshotOf(m_allSnapShotSteps[0].StepGuid);
+                SnapShotManager.DeleteAllSnapshotOf(m_allSnapShotSteps[0].StepGuid);
                 m_allSnapShotSteps.RemoveAt(index);
 
                 CurrentSnapshotIndex = 0;
@@ -99,7 +99,7 @@ namespace Mig.Snapshot
                 return;
             }
 
-            SnapShotUtils.DeleteAllSnapshotOf(m_allSnapShotSteps[index].StepGuid);
+            SnapShotManager.DeleteAllSnapshotOf(m_allSnapShotSteps[index].StepGuid);
             m_allSnapShotSteps.RemoveAt(index);
 
             CurrentSnapshotIndex = index - 1;
@@ -128,7 +128,7 @@ namespace Mig.Snapshot
             }
             else
             {
-                SnapShotUtils.CloneAllSnapshot(m_allSnapShotSteps[afterIndex].StepGuid, snapShotData.StepGuid);
+                SnapShotManager.CloneAllSnapshot(m_allSnapShotSteps[afterIndex].StepGuid, snapShotData.StepGuid);
                 InsertSnapShotStepAt(afterIndex + 1, snapShotData);
             }
         }
@@ -154,7 +154,7 @@ namespace Mig.Snapshot
 
             var applySnapshot = m_allSnapShotSteps[index];
 
-            SnapShotUtils.ApplyToSnapshot(applySnapshot.StepGuid);
+            SnapShotManager.ApplyToSnapshot(applySnapshot.StepGuid);
 
             CurrentSnapshotIndex = index;
         }

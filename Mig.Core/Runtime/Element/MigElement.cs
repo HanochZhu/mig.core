@@ -1,6 +1,8 @@
 using Newtonsoft.Json;
 using System;
 using UnityEngine;
+using Mig.Core;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 
 namespace Mig.Core
@@ -35,6 +37,9 @@ namespace Mig.Core
         [JsonIgnore]
         public Renderer renderer => gameObject ? gameObject.GetComponent<Renderer>(): null;
 
+        [JsonIgnore]
+        public MigMaterial migMaterial;
+
         public virtual void Init(string gameobjectPath, Guid currentGUID)
         {
 #if MIG_RUNTIME
@@ -44,6 +49,13 @@ namespace Mig.Core
             GameObjectPath = gameobjectPath;// GameObjectExtensions.GetGameObjectTreePath(Wrapper.gameObject, ModelManager.Instance.CurrentGameObjectRoot.transform);
             stepGuid = currentGUID;
 #endif
+
+            //if (renderer == null)
+            //{
+            //    Debug.LogError("can no find render at this gameobject");
+            //    return;
+            //}
+            migMaterial = new MigMaterial(renderer.material);
         }
 
         /// <summary>

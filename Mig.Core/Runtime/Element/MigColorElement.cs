@@ -8,10 +8,12 @@ namespace Mig.Core
         public Color CurrentMaterialColor;
         public override void Apply()
         {
-            if (renderer)
+            if (!renderer)
             {
-                renderer.material.color = CurrentMaterialColor;
+                Debug.LogError($"[MigColorElement] can not find render at {Wrapper.gameObject.name}");
+                return;
             }
+            this.migMaterial.mainColor = CurrentMaterialColor;
         }
 
         public override MigElement Clone()
@@ -24,10 +26,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            if (renderer)
-            {
-                CurrentMaterialColor = renderer.material.color;
-            }
+            CurrentMaterialColor = this.migMaterial.mainColor;
         }
 
     }

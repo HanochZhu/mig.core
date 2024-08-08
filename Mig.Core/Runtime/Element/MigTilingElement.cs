@@ -13,10 +13,12 @@ namespace Mig.Core
         public override void Apply()
         {
             var meshRender = this.gameObject.GetComponent<Renderer>();
-            if (meshRender != null)
+            if (renderer == null)
             {
-                meshRender.material.mainTextureScale = CurrentTiling;
+                Debug.LogError($"[MigTilingElement] Can not find render at {this.Wrapper.name}");
+                return;
             }
+            this.migMaterial.mainTextureScale = CurrentTiling;
         }
 
         public override MigElement Clone()
@@ -31,7 +33,7 @@ namespace Mig.Core
         {
             if (renderer)
             {
-                CurrentTiling = renderer.material.mainTextureScale;
+                CurrentTiling = this.migMaterial.mainTextureScale;
             }
         }
     }

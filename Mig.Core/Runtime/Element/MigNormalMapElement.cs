@@ -6,23 +6,24 @@ using UnityEngine;
 
 namespace Mig.Core
 {
-    public class MigNormalMaplement : MigElement
+    public class MigNormalMapElement : MigElement
     {
         // TODO
         [JsonIgnore]
         public Texture CurrentNormalMap;
         public override void Apply()
         {
-            var meshRender = this.gameObject.GetComponent<Renderer>();
-            if (meshRender != null)
+            if (renderer == null)
             {
-                meshRender.material.SetTexture("_BumpMap", CurrentNormalMap);
+                Debug.LogError($"[MigNormalMapElement] Can not find render at {this.Wrapper.name}");
+                return;
             }
+            this.migMaterial.NormalMap = CurrentNormalMap;
         }
 
         public override MigElement Clone()
         {
-            var clone = new MigNormalMaplement();
+            var clone = new MigNormalMapElement();
             clone.CurrentNormalMap = this.CurrentNormalMap; 
             clone.GameObjectPath = this.GameObjectPath;
             return clone;
@@ -30,10 +31,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            if (renderer)
-            {
-                CurrentNormalMap = renderer.material.GetTexture("_BumpMap");
-            }
+            CurrentNormalMap = this.migMaterial.NormalMap;
         }
     }
 }

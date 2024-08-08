@@ -5,9 +5,9 @@ using System;
 
 namespace Mig.Snapshot
 {
-    public static class SnapShotUtils
+    public static class SnapShotManager
     {
-        public static Texture2D TakeScreenshotForStepThumbail(Camera source, int width, int height)
+        public static Texture2D TakeScreenshotForStepThumbnail(Camera source, int width, int height)
         {
             source.transform.SetPositionAndRotation(Camera.main.transform.position, Camera.main.transform.rotation);
             source.clearFlags = CameraClearFlags.Color;

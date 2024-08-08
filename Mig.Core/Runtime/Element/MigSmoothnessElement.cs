@@ -1,6 +1,3 @@
-using Mig;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Mig.Core
@@ -10,11 +7,13 @@ namespace Mig.Core
         public float CurrentSmoothness;
         public override void Apply()
         {
-            var meshRender = this.gameObject.GetComponent<Renderer>();
-            if (meshRender != null)
+            if (renderer == null)
             {
-                meshRender.material.SetFloat("_Glossiness", CurrentSmoothness);
+                Debug.LogError($"can not find renderer at {this.Wrapper.name}");
+                return;
             }
+            this.migMaterial.Smoothness = CurrentSmoothness;
+
         }
 
         public override MigElement Clone()
@@ -27,10 +26,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            if (this.renderer)
-            {
-                CurrentSmoothness = renderer.material.GetFloat("_Glossiness");
-            }
+            CurrentSmoothness = this.migMaterial.Smoothness;
         }
     }
 

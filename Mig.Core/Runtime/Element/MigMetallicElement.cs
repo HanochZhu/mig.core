@@ -10,12 +10,12 @@ namespace Mig.Core
         public float CurrentMetallic;
         public override void Apply()
         {
-            var meshRender = this.gameObject.GetComponent<Renderer>();
-            if (meshRender != null)
+            if (renderer == null)
             {
-                // Todo
-                meshRender.material.SetFloat("_Metallic", CurrentMetallic);
+                Debug.LogWarning($"Fail to get mesh render at {this.gameObject.name}");
+                return;
             }
+            migMaterial.Metallic = CurrentMetallic;
         }
 
         public override MigElement Clone()
@@ -28,10 +28,12 @@ namespace Mig.Core
 
         public override void Record()
         {
-            if (renderer)
+            if (!renderer)
             {
-                CurrentMetallic = renderer.material.GetFloat("_Metallic");
+                Debug.LogWarning($"Fail to record at {this.Wrapper.gameObject.name}");
+                return;
             }
+            CurrentMetallic = migMaterial.Metallic;
         }
     }
 }

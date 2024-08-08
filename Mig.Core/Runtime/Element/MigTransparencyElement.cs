@@ -11,12 +11,13 @@ namespace Mig.Core
         public override void Apply()
         {
             var meshRender = this.gameObject.GetComponent<Renderer>();
-            if (meshRender != null)
+            if (renderer == null)
             {
-                var color = meshRender.material.color;
-                color.a = CurrentTransparency;
-                meshRender.material.color = color;
+                Debug.LogError($"[MigTilingElement] Can not find render at {this.Wrapper.name}");
+                return;
             }
+            
+            this.migMaterial.transparency = CurrentTransparency;
         }
 
         public override MigElement Clone()
@@ -29,10 +30,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            if (renderer)
-            {
-                CurrentTransparency = renderer.material.color.a;
-            }
+            CurrentTransparency = this.migMaterial.transparency;
         }
     }
 
