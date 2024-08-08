@@ -18,7 +18,7 @@ namespace Mig.Core
                 Debug.LogError($"[MigNormalMapElement] Can not find render at {this.Wrapper.name}");
                 return;
             }
-            this.migMaterial.NormalMap = CurrentNormalMap;
+            this.material.NormalMap = CurrentNormalMap;
         }
 
         public override MigElement Clone()
@@ -31,7 +31,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            CurrentNormalMap = this.migMaterial.NormalMap;
+            CurrentNormalMap = this.material.NormalMap;
         }
     }
 }

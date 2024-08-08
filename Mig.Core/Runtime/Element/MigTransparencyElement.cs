@@ -17,7 +17,7 @@ namespace Mig.Core
                 return;
             }
             
-            this.migMaterial.transparency = CurrentTransparency;
+            this.material.transparency = CurrentTransparency;
         }
 
         public override MigElement Clone()
@@ -30,7 +30,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            CurrentTransparency = this.migMaterial.transparency;
+            CurrentTransparency = this.material.transparency;
         }
     }
 

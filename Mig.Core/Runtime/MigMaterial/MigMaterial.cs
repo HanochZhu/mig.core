@@ -17,6 +17,11 @@ namespace Mig.Core
 
         public void UpdateMaterial(Material mat)
         {
+            if (mat == null)
+            {
+                migMaterialWrapperBase = new MigNullMaterialWrapper(mat);
+                return; 
+            }
             if (mat.shader.name == gltfShaderName)// 
             {
                 migMaterialWrapperBase = new MigGltfMaterialWrapper(mat);

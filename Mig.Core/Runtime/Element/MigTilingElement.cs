@@ -18,7 +18,7 @@ namespace Mig.Core
                 Debug.LogError($"[MigTilingElement] Can not find render at {this.Wrapper.name}");
                 return;
             }
-            this.migMaterial.mainTextureScale = CurrentTiling;
+            this.material.mainTextureScale = CurrentTiling;
         }
 
         public override MigElement Clone()
@@ -33,7 +33,7 @@ namespace Mig.Core
         {
             if (renderer)
             {
-                CurrentTiling = this.migMaterial.mainTextureScale;
+                CurrentTiling = this.material.mainTextureScale;
             }
         }
     }

@@ -13,7 +13,7 @@ namespace Mig.Core
                 Debug.LogError($"[MigColorElement] can not find render at {Wrapper.gameObject.name}");
                 return;
             }
-            this.migMaterial.mainColor = CurrentMaterialColor;
+            this.material.mainColor = CurrentMaterialColor;
         }
 
         public override MigElement Clone()
@@ -26,7 +26,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            CurrentMaterialColor = this.migMaterial.mainColor;
+            CurrentMaterialColor = this.material.mainColor;
         }
 
     }

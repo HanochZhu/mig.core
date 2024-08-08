@@ -9,7 +9,19 @@ namespace Mig.Core
 {
     public abstract class MigElement
     {
-        [JsonIgnore] public MigElementWrapper Wrapper;
+        [JsonIgnore] private MigElementWrapper wrapper;
+        [JsonIgnore] public MigElementWrapper Wrapper
+        {
+            set
+            {
+                wrapper = value;
+                material = new MigMaterial(renderer.material);
+            }
+            get
+            {
+                return wrapper;
+            }
+        }
 
         [JsonProperty("stepGuid")] private Guid stepGuid;
         [JsonProperty("gameObjectPath")] private string gameObjectPath;
@@ -38,7 +50,7 @@ namespace Mig.Core
         public Renderer renderer => gameObject ? gameObject.GetComponent<Renderer>(): null;
 
         [JsonIgnore]
-        public MigMaterial migMaterial;
+        public MigMaterial material;
 
         public virtual void Init(string gameobjectPath, Guid currentGUID)
         {
@@ -49,13 +61,6 @@ namespace Mig.Core
             GameObjectPath = gameobjectPath;// GameObjectExtensions.GetGameObjectTreePath(Wrapper.gameObject, ModelManager.Instance.CurrentGameObjectRoot.transform);
             stepGuid = currentGUID;
 #endif
-
-            //if (renderer == null)
-            //{
-            //    Debug.LogError("can no find render at this gameobject");
-            //    return;
-            //}
-            migMaterial = new MigMaterial(renderer.material);
         }
 
         /// <summary>

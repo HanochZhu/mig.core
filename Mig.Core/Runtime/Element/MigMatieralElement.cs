@@ -18,7 +18,7 @@ namespace Mig.Core
                 return;
             }
             renderer.material = CurrentMaterial;
-            this.migMaterial.UpdateMaterial(CurrentMaterial);
+            this.material.UpdateMaterial(CurrentMaterial);
         }
 
         public override MigElement Clone()
@@ -31,10 +31,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            if (renderer != null)
-            {
-                CurrentMaterial = renderer.material;
-            }
+            CurrentMaterial = renderer.material;
         }
     }
 }

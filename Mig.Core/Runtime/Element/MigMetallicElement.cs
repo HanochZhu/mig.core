@@ -15,7 +15,7 @@ namespace Mig.Core
                 Debug.LogWarning($"Fail to get mesh render at {this.gameObject.name}");
                 return;
             }
-            migMaterial.Metallic = CurrentMetallic;
+            material.Metallic = CurrentMetallic;
         }
 
         public override MigElement Clone()
@@ -33,7 +33,7 @@ namespace Mig.Core
                 Debug.LogWarning($"Fail to record at {this.Wrapper.gameObject.name}");
                 return;
             }
-            CurrentMetallic = migMaterial.Metallic;
+            CurrentMetallic = material.Metallic;
         }
     }
 }

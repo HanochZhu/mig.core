@@ -12,7 +12,7 @@ namespace Mig.Core
                 Debug.LogError($"can not find renderer at {this.Wrapper.name}");
                 return;
             }
-            this.migMaterial.Smoothness = CurrentSmoothness;
+            this.material.Smoothness = CurrentSmoothness;
 
         }
 
@@ -26,7 +26,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            CurrentSmoothness = this.migMaterial.Smoothness;
+            CurrentSmoothness = this.material.Smoothness;
         }
     }
 
