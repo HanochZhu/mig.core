@@ -12,11 +12,12 @@ namespace Mig.Core
         public Material CurrentMaterial;
         public override void Apply()
         {
-            if (renderer == null)
+            if (renderer == null || renderer.material == null || CurrentMaterial == null)
             {
                 Debug.LogError($"can not get mesh renderer at {this.Wrapper.name}");
                 return;
             }
+            Debug.Log($"{renderer.material.shader.name} ${CurrentMaterial.shader.name}");
             renderer.material = CurrentMaterial;
             this.material.UpdateMaterial(CurrentMaterial);
         }

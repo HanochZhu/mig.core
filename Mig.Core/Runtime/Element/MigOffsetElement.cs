@@ -12,11 +12,7 @@ namespace Mig.Core
         public Vector2 CurrentOffset;
         public override void Apply()
         {
-            var meshRender = this.gameObject.GetComponent<Renderer>();
-            if (meshRender != null)
-            {
-                meshRender.material.mainTextureOffset = CurrentOffset;
-            }
+            material.mainTextureOffset = CurrentOffset;
         }
 
         public override MigElement Clone()
@@ -29,10 +25,7 @@ namespace Mig.Core
 
         public override void Record()
         {
-            if (renderer)
-            {
-                CurrentOffset = renderer.material.mainTextureOffset;
-            }
+            CurrentOffset = material.mainTextureOffset;
         }
     }
 

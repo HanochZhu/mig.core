@@ -68,5 +68,7 @@ namespace Mig.Core
             get => migMaterialWrapperBase.transparency;
             set => migMaterialWrapperBase.transparency = value;
         }
+
+        public Vector2 mainTextureOffset { get; set; }
     }
 }
