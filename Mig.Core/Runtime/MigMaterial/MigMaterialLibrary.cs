@@ -6,6 +6,7 @@ using UnityEngine;
 namespace Mig.Core
 {
 
+    [Serializable]
     public class MigMaterialItem
     {
         public Guid Guid;
@@ -15,11 +16,19 @@ namespace Mig.Core
         public Sprite Icon;
     }
 
+    [Serializable]
+    public class MigTextureItem
+    {
+        public Guid Guid;
+        public string Name;
+        public Texture Texture;
+    }
+
     [CreateAssetMenu]
     public class MigMaterialLibrary : ScriptableObject
     {
-        [SerializeField]
         public List<MigMaterialItem> migMaterialItems = new();
+        public List<Texture> textures = new();
 
         private static MigMaterialLibrary instance;
 
@@ -47,6 +56,12 @@ namespace Mig.Core
 
 #if UNITY_EDITOR
         public void CreateNewItem()
+        {
+            var newItem = new MigMaterialItem();
+            newItem.Guid = Guid.NewGuid();
+            migMaterialItems.Add(newItem);
+        }
+        public void DeleteLastItem()
         {
             var newItem = new MigMaterialItem();
             newItem.Guid = Guid.NewGuid();
