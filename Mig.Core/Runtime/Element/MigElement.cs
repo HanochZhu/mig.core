@@ -15,7 +15,7 @@ namespace Mig.Core
             set
             {
                 wrapper = value;
-                material = new MigMaterial(renderer.material);
+                material = new MigMaterial(renderer.material, renderer.gameObject);
             }
             get
             {

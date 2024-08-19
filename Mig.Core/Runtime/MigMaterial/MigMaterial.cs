@@ -10,8 +10,10 @@ namespace Mig.Core
     {
         private MigMaterialWrapperBase migMaterialWrapperBase;
         private const string gltfShaderName = "UnityGLTF/PBRGraph";
-        public MigMaterial(Material mat)
+        public GameObject host { get; private set; }
+        public MigMaterial(Material mat, GameObject _host)
         {
+            host = _host;
             UpdateMaterial(mat);
         }
 
