@@ -14,6 +14,11 @@ namespace Mig.Core
         public Material Material;
 
         public Sprite Icon;
+
+        public MigMaterialItem()
+        {
+            Guid = Guid.NewGuid();
+        }
     }
 
     [Serializable]
@@ -22,6 +27,10 @@ namespace Mig.Core
         public Guid Guid;
         public string Name;
         public Texture Texture;
+        public MigTextureItem()
+        {
+            Guid = Guid.NewGuid();
+        }
     }
 
     [CreateAssetMenu]
@@ -42,7 +51,6 @@ namespace Mig.Core
                     if (instance == null)
                     {
                         Debug.Assert(false, "Fail to load MigMaterialLibrary at /MigMaterialLibrary");
-
                     }
                 }
                 return instance;

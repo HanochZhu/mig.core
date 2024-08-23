@@ -20,7 +20,11 @@ public static class MigEventCommon
     // interact
     public static string OnClickModel = "OnClickModel";
     public static string OnSelectedChanged = "OnSelectedChanged";
+    public static string OnChangeSelectModelTexture = "OnChangeSelectModelTexture";
 
     public static string OnModelPropertiesChange = "OnModelPropertiesChange";
 
+    public static string OnGizmosDragBegin = "OnGizmosDragBegin";
+    public static string OnGizmosDragUpdate = "OnGizmosDragUpdate";
+    public static string OnGizmosDragEnd = "OnGizmosDragEnd";
 }
