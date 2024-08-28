@@ -27,4 +27,6 @@ public static class MigEventCommon
     public static string OnGizmosDragBegin = "OnGizmosDragBegin";
     public static string OnGizmosDragUpdate = "OnGizmosDragUpdate";
     public static string OnGizmosDragEnd = "OnGizmosDragEnd";
+
+    public static string OnPrompt = "OnPrompt";
 }

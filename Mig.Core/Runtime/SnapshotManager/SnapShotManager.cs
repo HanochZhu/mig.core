@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.Events;
+using System.Collections;
 
 namespace Mig.Snapshot
 {
-    public class SnapshotManager : EasySington<SnapshotManager>
+    public class SnapshotManager : JigSingleton<SnapshotManager>
     {
         public Action OnLoadedAllSnapShot;
 
@@ -64,7 +66,7 @@ namespace Mig.Snapshot
                 return;
             }
             var currentSnapShot = m_allSnapShotSteps[index];
-            var image = SnapShotManager.TakeScreenshotForStepThumbnail(Camera.main, 520, 480);
+            var image = SnapshotManagerUtils.TakeScreenshotForStepThumbnail(Camera.main, 520, 480);
             currentSnapShot.Image = image;
         }
 
@@ -91,7 +93,7 @@ namespace Mig.Snapshot
             }
             else if (index == 0 && CurrentSnapshotCount != 1)
             {
-                SnapShotManager.DeleteAllSnapshotOf(m_allSnapShotSteps[0].StepGuid);
+                SnapshotManagerUtils.DeleteAllSnapshotOf(m_allSnapShotSteps[0].StepGuid);
                 m_allSnapShotSteps.RemoveAt(index);
 
                 CurrentSnapshotIndex = 0;
@@ -99,7 +101,7 @@ namespace Mig.Snapshot
                 return;
             }
 
-            SnapShotManager.DeleteAllSnapshotOf(m_allSnapShotSteps[index].StepGuid);
+            SnapshotManagerUtils.DeleteAllSnapshotOf(m_allSnapShotSteps[index].StepGuid);
             m_allSnapShotSteps.RemoveAt(index);
 
             CurrentSnapshotIndex = index - 1;
@@ -128,7 +130,7 @@ namespace Mig.Snapshot
             }
             else
             {
-                SnapShotManager.CloneAllSnapshot(m_allSnapShotSteps[afterIndex].StepGuid, snapShotData.StepGuid);
+                SnapshotManagerUtils.CloneAllSnapshot(m_allSnapShotSteps[afterIndex].StepGuid, snapShotData.StepGuid);
                 InsertSnapShotStepAt(afterIndex + 1, snapShotData);
             }
         }
@@ -154,9 +156,21 @@ namespace Mig.Snapshot
 
             var applySnapshot = m_allSnapShotSteps[index];
 
-            SnapShotManager.ApplyToSnapshot(applySnapshot.StepGuid);
+            SnapshotManagerUtils.ApplyToSnapshot(applySnapshot.StepGuid);
 
             CurrentSnapshotIndex = index;
+        }
+
+        public void AppleToTargetSnapshotWaitForFrame(int index, UnityAction callback)
+        {
+            StartCoroutine(AppleToTargetSnapshotWaitForFrameInternal(index, callback));
+        }
+
+        private IEnumerator AppleToTargetSnapshotWaitForFrameInternal(int index, UnityAction callback)
+        {
+            yield return null;
+            ApplyToTargetSnapshot(index);
+            callback?.Invoke();
         }
 
         public SnapShotData GetSnapShotStep(int index) => m_allSnapShotSteps[index];
@@ -177,6 +191,11 @@ namespace Mig.Snapshot
             m_allSnapShotSteps = datas;
 
             OnSnapShotUpdated?.Invoke();
+        }
+
+        private void OnDestroy()
+        {
+            m_allSnapShotSteps.Clear();
         }
     }
 }

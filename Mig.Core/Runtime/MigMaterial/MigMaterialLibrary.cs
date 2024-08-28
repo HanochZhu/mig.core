@@ -59,7 +59,8 @@ namespace Mig.Core
         
         public static Material LoadMaterialByGuiD(Guid matGUID)
         {
-            return instance.migMaterialItems.Where(m => m.Equals(matGUID)).FirstOrDefault().Material ;
+            var selectMaterialItem = instance.migMaterialItems.Where(m => m.Guid.Equals(matGUID)).FirstOrDefault();
+            return selectMaterialItem.Material ;
         }
 
 #if UNITY_EDITOR

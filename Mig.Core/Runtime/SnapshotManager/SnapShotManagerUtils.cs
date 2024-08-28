@@ -5,7 +5,7 @@ using System;
 
 namespace Mig.Snapshot
 {
-    public static class SnapShotManager
+    public static class SnapshotManagerUtils
     {
         public static Texture2D TakeScreenshotForStepThumbnail(Camera source, int width, int height)
         {
