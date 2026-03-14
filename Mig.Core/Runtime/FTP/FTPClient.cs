@@ -13,7 +13,7 @@ namespace Mig.Core
 {
     public class FTPClient
     {
-        private static string FTPCONSTR = "ftp://183.131.108.168/";//FTP的服务器地址，格式为ftp://192.168.1.234/。ip地址和端口换成自己的，这些建议写在配置文件中，方便修改
+        private static string FTPCONSTR = "";//FTP的服务器地址，格式为ftp://192.168.1.234/。ip地址和端口换成自己的，这些建议写在配置文件中，方便修改
         private static string FTPUSERNAME = "mig";//我的FTP服务器的用户名
         private static string FTPPASSWORD = "migassets";//我的FTP服务器的密码
         public static float uploadPercentage;//上传进度
