@@ -1,0 +1,18 @@
+{
+    "name": "Mig.Core",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8c1b5e158961445498f8a66188fbb2e3",
+        "GUID:383d0723302019e4bb57d134a5aa19b5",
+        "GUID:18d18f811ba286c49814567a3cfba688"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
