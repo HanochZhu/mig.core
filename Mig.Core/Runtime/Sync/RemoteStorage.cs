@@ -32,36 +32,15 @@ namespace Mig.Core
             get
             {
                 SyncSettings.EnsureLoaded();
-                if (SyncSettings.PreferFtp)
-                {
-                    return FTPClient.HasConfiguredHost();
-                }
-
-                return SyncSettings.HasHttpEndpoint || FTPClient.HasConfiguredHost();
+                return SyncSettings.HasHttpEndpoint;
             }
         }
 
         public static void Reload()
         {
             SyncSettings.EnsureLoaded();
-            if (SyncSettings.PreferFtp && FTPClient.HasConfiguredHost())
-            {
-                current = new FtpRemoteStorage();
-            }
-            else if (SyncSettings.HasHttpEndpoint)
-            {
-                current = new HttpRemoteStorage();
-            }
-            else if (FTPClient.HasConfiguredHost())
-            {
-                current = new FtpRemoteStorage();
-            }
-            else
-            {
-                current = new HttpRemoteStorage();
-            }
-
-            Debug.Log($"[Mig] Remote storage backend: {current.BackendName}");
+            current = new HttpRemoteStorage();
+            Debug.Log($"[Mig] Remote storage backend: {current.BackendName} {SyncSettings.BaseUrl}");
         }
 
         public static Task<IReadOnlyList<string>> ListProjectsAsync(CancellationToken token) =>

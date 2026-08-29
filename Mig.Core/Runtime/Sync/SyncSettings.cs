@@ -15,13 +15,9 @@ namespace Mig.Core
         [Tooltip("Optional account override. Leave empty to use AccountManager.")]
         public string accountId = "";
 
-        [Tooltip("Use FTP even when an HTTP base URL is set.")]
-        public bool preferFtp = false;
-
         private static bool loaded;
         private static string currentBaseUrl = "http://127.0.0.1:8787";
         private static string currentToken = "mig-dev-token";
-        private static bool currentPreferFtp;
 
         public static string BaseUrl
         {
@@ -38,15 +34,6 @@ namespace Mig.Core
             {
                 EnsureLoaded();
                 return currentToken;
-            }
-        }
-
-        public static bool PreferFtp
-        {
-            get
-            {
-                EnsureLoaded();
-                return currentPreferFtp;
             }
         }
 
@@ -76,8 +63,6 @@ namespace Mig.Core
                 {
                     currentToken = settings.apiToken.Trim();
                 }
-
-                currentPreferFtp = settings.preferFtp;
 
                 if (!string.IsNullOrWhiteSpace(settings.accountId))
                 {

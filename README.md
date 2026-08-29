@@ -17,7 +17,7 @@ This package contains the core abstractions and utilities used across the MigSpa
 - Material wrapper utilities for runtime material manipulation
 - Snapshot management for step-based presentation workflows
 - Simple task-chain infrastructure for multi-step loading and processing
-- FTP utilities for uploading and downloading project-related assets
+- HTTP remote storage for uploading and downloading project packages
 - Editor extensions for inspecting and editing core data structures
 
 ## Main Modules
@@ -71,18 +71,12 @@ Representative classes:
 
 - `TaskHandlerBase`
 - `LoadingFromCacheTask`
-- `LoadingFromFTPTask`
+- `LoadingFromRemoteTask`
 - `UnzipProjectFileTask`
 
-### `Mig.Core/Runtime/FTP`
+### `Mig.Core/Runtime/Sync`
 
-Contains FTP-related helpers used by the project to exchange project files and assets with a remote server.
-
-The main entry point is:
-
-- `FTPClient`
-
-If you use this package independently, make sure to update the FTP server address and credentials before runtime use.
+HTTP client for the Mig sync server (`RemoteStorage`, `HttpRemoteStorage`, `SyncSettings`).
 
 ### `Mig.Core/Editor`
 
@@ -99,7 +93,7 @@ Packages/mig.core
    |  |- Account
    |  |- Element
    |  |- Event
-   |  |- FTP
+   |  |- Sync
    |  |- MigMaterial
    |  |- Model
    |  |- SnapshotManager
@@ -147,11 +141,9 @@ using Mig.Core.TaskPattern;
 - Several runtime systems are intended to be used together with other Mig packages.
 - Some configuration values are currently hard-coded and may need to be adapted for your environment.
 
-## FTP Configuration
+## Sync Configuration
 
-Remote I/O goes through `RemoteStorage` (`Mig.Core/Runtime/Sync`). Default backend is HTTP (`Create > Mig > Sync Settings`). FTP remains an adapter when `preferFtp` is on.
-
-Create `Assets/Resources/FTPSettings.asset` via `Create > Mig > FTP Settings` only if you still need the FTP adapter. Do not put a public FTP host back into source.
+Remote I/O goes through `RemoteStorage` (`Create > Mig > Sync Settings`). There is no FTP client in this package.
 
 ## License
 
