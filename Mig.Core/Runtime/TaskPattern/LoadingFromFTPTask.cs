@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -9,37 +6,34 @@ namespace Mig.Core.TaskPattern
 {
     public class LoadingFromFTPTask : TaskHandlerBase
     {
+        private readonly string projectName;
+        private readonly string saveZipPath;
 
-        private string downloadAddress;
-        private string saveZipPath;
-
-        public LoadingFromFTPTask(string downloadAddress, string savePath, Action<bool> taskCallback) : base(taskCallback)
+        public LoadingFromFTPTask(string projectName, string savePath, Action<bool> taskCallback) : base(taskCallback)
         {
-            this.downloadAddress = downloadAddress;
+            this.projectName = projectName;
             this.saveZipPath = savePath;
         }
 
         public override async void Execute()
         {
             EventManager.TriggerEvent(MigEventCommon.OnLoadingModelBegin, "Downloading");
-            if (string.IsNullOrEmpty(downloadAddress) || string.IsNullOrEmpty(saveZipPath))
+            if (string.IsNullOrEmpty(projectName) || string.IsNullOrEmpty(saveZipPath))
             {
-                Debug.LogWarning($"You must set downloadAddress to saveZipPath before download");
+                Debug.LogWarning("You must set projectName and saveZipPath before download");
                 Fail();
                 return;
             }
-            var result = await FTPClient.DownloadToFileAsync(downloadAddress, saveZipPath, true);
 
+            var result = await RemoteStorage.DownloadPackageAsync(projectName, saveZipPath);
             if (!result)
             {
-                Debug.LogError($"Failed to download file {downloadAddress} to {saveZipPath}");
+                Debug.LogError($"Failed to download project {projectName} to {saveZipPath}");
                 Fail();
                 return;
             }
 
             Continue();
         }
-
     }
 }
-

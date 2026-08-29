@@ -149,7 +149,9 @@ using Mig.Core.TaskPattern;
 
 ## FTP Configuration
 
-Create `Assets/Resources/FTPSettings.asset` via `Create > Mig > FTP Settings` and set host / username / password there. `FTPClient` reads that asset at runtime. Do not put a public FTP host back into source.
+Remote I/O goes through `RemoteStorage` (`Mig.Core/Runtime/Sync`). Default backend is HTTP (`Create > Mig > Sync Settings`). FTP remains an adapter when `preferFtp` is on.
+
+Create `Assets/Resources/FTPSettings.asset` via `Create > Mig > FTP Settings` only if you still need the FTP adapter. Do not put a public FTP host back into source.
 
 ## License
 
