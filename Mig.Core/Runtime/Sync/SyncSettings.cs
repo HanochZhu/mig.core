@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Mig;
 
@@ -60,30 +61,62 @@ namespace Mig.Core
 
             loaded = true;
             var settings = Resources.Load<SyncSettings>("SyncSettings");
-            if (settings == null)
+            if (settings != null)
             {
-                return;
+                if (!string.IsNullOrWhiteSpace(settings.baseUrl))
+                {
+                    currentBaseUrl = settings.baseUrl.Trim().TrimEnd('/');
+                }
+                else
+                {
+                    currentBaseUrl = "";
+                }
+
+                if (!string.IsNullOrWhiteSpace(settings.apiToken))
+                {
+                    currentToken = settings.apiToken.Trim();
+                }
+
+                currentPreferFtp = settings.preferFtp;
+
+                if (!string.IsNullOrWhiteSpace(settings.accountId))
+                {
+                    AccountManager.SetCurrentAccountID(settings.accountId);
+                }
             }
 
-            if (!string.IsNullOrWhiteSpace(settings.baseUrl))
+            ApplyRuntimeOverrides();
+        }
+
+        /// <summary>
+        /// Launch args and PlayerPrefs win over the asset so a shipped build
+        /// can point at a new host without rebuilding.
+        /// </summary>
+        private static void ApplyRuntimeOverrides()
+        {
+            var prefsUrl = PlayerPrefs.GetString("Mig.Sync.BaseUrl", "");
+            if (!string.IsNullOrWhiteSpace(prefsUrl))
             {
-                currentBaseUrl = settings.baseUrl.Trim().TrimEnd('/');
-            }
-            else
-            {
-                currentBaseUrl = "";
+                currentBaseUrl = prefsUrl.Trim().TrimEnd('/');
             }
 
-            if (!string.IsNullOrWhiteSpace(settings.apiToken))
+            var prefsToken = PlayerPrefs.GetString("Mig.Sync.ApiToken", "");
+            if (!string.IsNullOrWhiteSpace(prefsToken))
             {
-                currentToken = settings.apiToken.Trim();
+                currentToken = prefsToken.Trim();
             }
 
-            currentPreferFtp = settings.preferFtp;
-
-            if (!string.IsNullOrWhiteSpace(settings.accountId))
+            var args = Environment.GetCommandLineArgs();
+            for (var i = 0; i < args.Length - 1; i++)
             {
-                AccountManager.SetCurrentAccountID(settings.accountId);
+                if (args[i] == "-syncUrl" && !string.IsNullOrWhiteSpace(args[i + 1]))
+                {
+                    currentBaseUrl = args[i + 1].Trim().TrimEnd('/');
+                }
+                if (args[i] == "-syncToken" && !string.IsNullOrWhiteSpace(args[i + 1]))
+                {
+                    currentToken = args[i + 1].Trim();
+                }
             }
         }
     }
