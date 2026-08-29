@@ -73,18 +73,27 @@ namespace Mig.Core
         public async Task<bool> DownloadPackageAsync(string projectName, string localPath, CancellationToken token)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(localPath) ?? ".");
-            using var request = CreateRequest(UnityWebRequest.kHttpVerbGET, $"/v1/projects/{Uri.EscapeDataString(projectName)}/package");
-            request.downloadHandler = new DownloadHandlerFile(localPath);
-            Progress = 0f;
-            await UnityWebRequestTask.Send(request, token);
-            Progress = 1f;
-            if (token.IsCancellationRequested || !UnityWebRequestTask.IsSuccess(request))
+            var succeeded = false;
+            using (var request = CreateRequest(UnityWebRequest.kHttpVerbGET, $"/v1/projects/{Uri.EscapeDataString(projectName)}/package"))
             {
-                Debug.LogError($"[Mig] HTTP package download failed: {request.error}");
+                request.downloadHandler = new DownloadHandlerFile(localPath);
+                Progress = 0f;
+                await UnityWebRequestTask.Send(request, token);
+                Progress = 1f;
+                succeeded = !token.IsCancellationRequested && UnityWebRequestTask.IsSuccess(request);
+                if (!succeeded)
+                {
+                    Debug.LogError($"[Mig] HTTP package download failed: {request.error}");
+                }
+            }
+
+            if (!succeeded || !File.Exists(localPath) || new FileInfo(localPath).Length == 0)
+            {
+                TryDeleteLocalFile(localPath);
                 return false;
             }
 
-            return File.Exists(localPath);
+            return true;
         }
 
         public async Task<bool> UploadThumbnailAsync(string projectName, byte[] pngBytes)
@@ -127,6 +136,21 @@ namespace Mig.Core
             request.SetRequestHeader("Authorization", "Bearer " + SyncSettings.ApiToken);
             request.SetRequestHeader("X-Mig-Account", AccountManager.GetCurrentAccountID());
             return request;
+        }
+
+        private static void TryDeleteLocalFile(string localPath)
+        {
+            try
+            {
+                if (File.Exists(localPath))
+                {
+                    File.Delete(localPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[Mig] Failed to remove incomplete package {localPath}: {ex.Message}");
+            }
         }
 
         private static byte[] ReadAllBytes(Stream stream)

@@ -186,7 +186,8 @@ namespace Mig.Snapshot
 
         public void SetAllSnapShot(List<SnapShotData> datas)
         {
-            m_allSnapShotSteps = datas;
+            m_allSnapShotSteps = datas ?? new List<SnapShotData>();
+            CurrentSnapshotIndex = 0;
 
             OnSnapShotUpdated?.Invoke();
         }
