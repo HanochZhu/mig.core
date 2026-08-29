@@ -39,5 +39,10 @@ namespace Mig.Core
         {
             elements.Remove(element);
         }
+
+        public void ClearElements()
+        {
+            elements.Clear();
+        }
     }
 }

@@ -40,6 +40,12 @@ namespace Mig.Core
             get => PBRGraphMap.SpecularTextureScale; 
             set => PBRGraphMap.SpecularTextureScale = value; 
         }
+
+        public override Vector2 mainTextureOffset
+        {
+            get => Material.mainTextureOffset;
+            set => Material.mainTextureOffset = value;
+        }
         public override float transparency 
         {
             get 

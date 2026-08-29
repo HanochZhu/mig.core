@@ -68,6 +68,7 @@ namespace Mig.Snapshot
             var currentSnapShot = m_allSnapShotSteps[index];
             var image = SnapshotManagerUtils.TakeScreenshotForStepThumbnail(Camera.main, 520, 480);
             currentSnapShot.Image = image;
+            SnapshotManagerUtils.RecordCameraPose(currentSnapShot);
         }
 
         /// <summary>
@@ -122,6 +123,7 @@ namespace Mig.Snapshot
             snapShotData.StepCount = CurrentSnapshotCount;
             // only set guid at here
             snapShotData.StepGuid = Guid.NewGuid();
+            snapShotData.Name = $"Step {CurrentSnapshotCount + 1}";
             snapShotData.Comment = string.Empty;
 
             if(CurrentSnapshotCount == 0)
@@ -155,8 +157,10 @@ namespace Mig.Snapshot
             var applySnapshot = m_allSnapShotSteps[index];
 
             SnapshotManagerUtils.ApplyToSnapshot(applySnapshot.StepGuid);
+            SnapshotManagerUtils.ApplyCameraPose(applySnapshot);
 
             CurrentSnapshotIndex = index;
+            OnSnapShotUpdated?.Invoke();
         }
 
         public void AppleToTargetSnapshotWaitForFrame(int index, UnityAction callback)

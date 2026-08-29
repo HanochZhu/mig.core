@@ -32,6 +32,12 @@ namespace Mig.Core
             get => Material.mainTextureScale; 
             set => Material.mainTextureScale = value; 
         }
+
+        public override Vector2 mainTextureOffset
+        {
+            get => Material.mainTextureOffset;
+            set => Material.mainTextureOffset = value;
+        }
         public override float transparency 
         { 
             get

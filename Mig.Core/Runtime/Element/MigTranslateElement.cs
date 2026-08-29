@@ -34,7 +34,7 @@ namespace Mig.Core
         {
             StepLocalPosition = this.transform.localPosition;
             StepLocalRotation = this.transform.localRotation;
-            StepLocalScale = this.transform.lossyScale;
+            StepLocalScale = this.transform.localScale;
         }
     }
 

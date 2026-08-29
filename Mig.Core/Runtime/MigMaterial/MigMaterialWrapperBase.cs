@@ -22,6 +22,8 @@ namespace Mig.Core
         public abstract float Smoothness { get; set; }
         public abstract Vector2 mainTextureScale { get; set; }
 
+        public abstract Vector2 mainTextureOffset { get; set; }
+
         public abstract float transparency { get; set; }
     }
 }

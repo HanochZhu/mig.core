@@ -13,7 +13,18 @@ namespace Mig.Core
             set
             {
                 wrapper = value;
-                material = new MigMaterial(renderer.material, renderer.gameObject);
+                if (wrapper == null || material != null)
+                {
+                    return;
+                }
+
+                var hostRenderer = wrapper.GetComponent<Renderer>();
+                if (hostRenderer == null)
+                {
+                    return;
+                }
+
+                material = new MigMaterial(hostRenderer.material, hostRenderer.gameObject);
             }
             get
             {

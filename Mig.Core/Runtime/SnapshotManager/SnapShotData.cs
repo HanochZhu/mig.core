@@ -1,15 +1,11 @@
 using Newtonsoft.Json;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Mig.Snapshot
 {
     public class SnapShotData
     {
-        private Dictionary<string, SnapShotState> GameObjectSnapShotState = new();
-
         public int StepCount;
 
         public Guid StepGuid;
@@ -17,16 +13,11 @@ namespace Mig.Snapshot
         public string Name;
         public string Comment;
 
-        // TODO
+        public bool HasCameraPose;
+        public Vector3 CameraPosition;
+        public Quaternion CameraRotation;
+
         [JsonIgnore]
         public Texture2D Image;
-
-        // TODO It seems that SnapShotStateRoot is unnecessary;
-        //public SnapShotState SnapShotStateRoot;
-
-        /// <summary>
-        /// Todo might not used
-        /// </summary>
-        //public string GameObjectName;
     }
 }

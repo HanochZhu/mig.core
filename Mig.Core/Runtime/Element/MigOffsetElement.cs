@@ -8,7 +8,6 @@ namespace Mig.Core
 {
     public class MigOffsetElement : MigElement
     {
-        [JsonIgnore]
         public Vector2 CurrentOffset;
         public override void Apply()
         {

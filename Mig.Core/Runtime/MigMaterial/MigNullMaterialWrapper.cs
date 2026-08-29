@@ -17,6 +17,7 @@ namespace Mig.Core
         public override Texture NormalMap { get; set; }
         public override float Smoothness { get; set ; }
         public override Vector2 mainTextureScale { get ; set ; }
+        public override Vector2 mainTextureOffset { get; set; }
         public override float transparency { get ; set ; }
     }
 

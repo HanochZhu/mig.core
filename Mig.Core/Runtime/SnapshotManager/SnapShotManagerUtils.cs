@@ -28,9 +28,37 @@ namespace Mig.Snapshot
             return texture2D;
         }
 
+        public static void RecordCameraPose(SnapShotData snapshot)
+        {
+            if (snapshot == null || Camera.main == null)
+            {
+                return;
+            }
+
+            var cameraTransform = Camera.main.transform;
+            snapshot.HasCameraPose = true;
+            snapshot.CameraPosition = cameraTransform.position;
+            snapshot.CameraRotation = cameraTransform.rotation;
+        }
+
+        public static void ApplyCameraPose(SnapShotData snapshot)
+        {
+            if (snapshot == null || !snapshot.HasCameraPose || Camera.main == null)
+            {
+                return;
+            }
+
+            Camera.main.transform.SetPositionAndRotation(snapshot.CameraPosition, snapshot.CameraRotation);
+        }
+
         public static void ApplyToSnapshot(Guid step)
         {
-            var elements = MigElementWrapper.WrapperRoot.GetComponentsInChildrenOnly<MigElementWrapper>().SelectMany(es => es.Elements).ToList();
+            if (MigElementWrapper.WrapperRoot == null)
+            {
+                return;
+            }
+
+            var elements = MigElementWrapper.WrapperRoot.GetComponentsInChildrenOnly<MigElementWrapper>(true).SelectMany(es => es.Elements).ToList();
 
             // first: revert all element to origin
             elements.Where(e => e.StepGUID == Guid.Empty)
@@ -44,7 +72,12 @@ namespace Mig.Snapshot
 
         public static void DeleteAllSnapshotOf(Guid guid)
         {
-            var wrappers = MigElementWrapper.WrapperRoot.GetComponentsInChildrenOnly<MigElementWrapper>();
+            if (MigElementWrapper.WrapperRoot == null)
+            {
+                return;
+            }
+
+            var wrappers = MigElementWrapper.WrapperRoot.GetComponentsInChildrenOnly<MigElementWrapper>(true);
 
             wrappers.ForEach((wrapper) =>
             {
@@ -54,7 +87,12 @@ namespace Mig.Snapshot
 
         public static void CloneAllSnapshot(Guid from, Guid to)
         {
-            var wrappers = MigElementWrapper.WrapperRoot.GetComponentsInChildrenOnly<MigElementWrapper>();
+            if (MigElementWrapper.WrapperRoot == null)
+            {
+                return;
+            }
+
+            var wrappers = MigElementWrapper.WrapperRoot.GetComponentsInChildrenOnly<MigElementWrapper>(true);
 
             wrappers.ForEach((wrapper) =>
             {
