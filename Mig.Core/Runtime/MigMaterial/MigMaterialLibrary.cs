@@ -59,8 +59,12 @@ namespace Mig.Core
         
         public static Material LoadMaterialByGuiD(Guid matGUID)
         {
-            var selectMaterialItem = instance.migMaterialItems.Where(m => m.Guid.Equals(matGUID)).FirstOrDefault();
-            return selectMaterialItem.Material ;
+            if (instance == null)
+            {
+                return null;
+            }
+            var selectMaterialItem = instance.migMaterialItems.FirstOrDefault(m => m.Guid.Equals(matGUID));
+            return selectMaterialItem?.Material;
         }
 
 #if UNITY_EDITOR
@@ -72,9 +76,11 @@ namespace Mig.Core
         }
         public void DeleteLastItem()
         {
-            var newItem = new MigMaterialItem();
-            newItem.Guid = Guid.NewGuid();
-            migMaterialItems.Add(newItem);
+            if (migMaterialItems.Count == 0)
+            {
+                return;
+            }
+            migMaterialItems.RemoveAt(migMaterialItems.Count - 1);
         }
 #endif
     }

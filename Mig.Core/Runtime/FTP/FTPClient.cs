@@ -8,18 +8,91 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using Mig;
 
 namespace Mig.Core
 {
     public class FTPClient
     {
-        private static string FTPCONSTR = "";//FTP的服务器地址，格式为ftp://192.168.1.234/。ip地址和端口换成自己的，这些建议写在配置文件中，方便修改
-        private static string FTPUSERNAME = "mig";//我的FTP服务器的用户名
-        private static string FTPPASSWORD = "migassets";//我的FTP服务器的密码
+        private static string FTPCONSTR = "";//FTP的服务器地址，格式为ftp://192.168.1.234/。优先从 Resources/FTPSettings 读取
+        private static string FTPUSERNAME = "mig";
+        private static string FTPPASSWORD = "migassets";
         public static float uploadPercentage;//上传进度
         public static float downloadPercentage;//下载进度
         private static string ftpFileNamePattern = @"([^\s]+)\s*$";
         private static string ftpDirNamePattern = @"([^\s]+)\s*$";
+        private static bool settingsLoaded;
+
+        static FTPClient()
+        {
+            EnsureSettingsLoaded();
+        }
+
+        public static void EnsureSettingsLoaded()
+        {
+            if (settingsLoaded)
+            {
+                return;
+            }
+
+            settingsLoaded = true;
+            var settings = Resources.Load<FTPSettings>("FTPSettings");
+            if (settings == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.host))
+            {
+                FTPCONSTR = settings.host.Trim();
+            }
+            if (!string.IsNullOrWhiteSpace(settings.username))
+            {
+                FTPUSERNAME = settings.username;
+            }
+            if (!string.IsNullOrWhiteSpace(settings.password))
+            {
+                FTPPASSWORD = settings.password;
+            }
+            if (!string.IsNullOrWhiteSpace(settings.accountId))
+            {
+                AccountManager.SetCurrentAccountID(settings.accountId);
+            }
+        }
+
+        public static bool HasConfiguredHost()
+        {
+            EnsureSettingsLoaded();
+            return !string.IsNullOrWhiteSpace(FTPCONSTR);
+        }
+
+        public static string CombineUrl(params string[] parts)
+        {
+            if (parts == null || parts.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            var segments = new System.Collections.Generic.List<string>();
+            foreach (var part in parts)
+            {
+                if (string.IsNullOrWhiteSpace(part))
+                {
+                    continue;
+                }
+
+                var normalized = part.Replace('\\', '/').Trim();
+                if (segments.Count == 0)
+                {
+                    segments.Add(normalized.TrimEnd('/'));
+                    continue;
+                }
+
+                segments.Add(normalized.Trim('/'));
+            }
+
+            return string.Join("/", segments);
+        }
 
         /// <summary>
         /// File will store at server according to its upload user id
@@ -27,7 +100,8 @@ namespace Mig.Core
         /// <returns></returns>
         public static string GetCurrentFTPDirRoot()
         {
-            return Path.Combine(FTPCONSTR, AccountManager.GetCurrentAccountID());
+            EnsureSettingsLoaded();
+            return CombineUrl(FTPCONSTR, AccountManager.GetCurrentAccountID());
         }
 
 
@@ -69,7 +143,7 @@ namespace Mig.Core
                 {
                     stream.Write(buff, 0, contentLen);
                     startByte = contentLen + startByte;
-                    percent = startByte / allByte * 100;
+                    percent = allByte == 0 ? 100f : (startByte / (float)allByte) * 100f;
                     if (percent <= 100)
                     {
                         uploadPercentage = percent;
@@ -456,7 +530,8 @@ namespace Mig.Core
         /// <returns></returns>        
         public static bool DirectoryIsExist(string ftpDirPath)
         {
-            return GetFileList(ftpDirPath).Length > 0;
+            var list = GetFileList(ftpDirPath);
+            return list != null && list.Length > 0;
         }
 
         private static string[] GetFileList(string ftpDirPath)
@@ -526,6 +601,11 @@ namespace Mig.Core
         public static List<string> GetFTPDirList(string requestAddress)
         {
             List<string> result = new List<string>();
+            if (string.IsNullOrWhiteSpace(requestAddress) || !HasConfiguredHost())
+            {
+                Debug.LogWarning("[Mig] FTP host is not configured. Create Assets/Resources/FTPSettings.asset.");
+                return result;
+            }
             try
             {
                 FtpWebRequest reqFTP = (FtpWebRequest)WebRequest.Create(new Uri(requestAddress));

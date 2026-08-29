@@ -149,17 +149,7 @@ using Mig.Core.TaskPattern;
 
 ## FTP Configuration
 
-The FTP configuration currently lives in:
-
-`Mig.Core/Runtime/FTP/FTPClient.cs`
-
-Typical fields to review:
-
-```csharp
-private static string FTPCONSTR = "";
-private static string FTPUSERNAME = "mig";
-private static string FTPPASSWORD = "migassets";
-```
+Create `Assets/Resources/FTPSettings.asset` via `Create > Mig > FTP Settings` and set host / username / password there. `FTPClient` reads that asset at runtime. Do not put a public FTP host back into source.
 
 ## License
 

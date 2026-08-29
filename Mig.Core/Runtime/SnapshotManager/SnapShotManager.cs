@@ -145,14 +145,12 @@ namespace Mig.Snapshot
 
         public void ApplyToTargetSnapshot(int index)
         {
-            if(index > CurrentSnapshotIndex)
+            if (m_allSnapShotSteps == null || m_allSnapShotSteps.Count == 0)
             {
-                index %= CurrentSnapshotCount;
+                return;
             }
-            else if(index < CurrentSnapshotIndex && index < 0)
-            {
-                index = CurrentSnapshotCount - 1;
-            }
+
+            index = Mathf.Clamp(index, 0, m_allSnapShotSteps.Count - 1);
 
             var applySnapshot = m_allSnapShotSteps[index];
 

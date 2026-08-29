@@ -7,7 +7,7 @@ namespace Mig
 {
     public class AccountManager
     {
-        private readonly static string AccountID = "949F599B-4B53-4B4D-BAD6-B856F7B91830";
+        private static string AccountID = "949F599B-4B53-4B4D-BAD6-B856F7B91830";
 
         /// <summary>
         /// Get Current Account 
@@ -16,6 +16,14 @@ namespace Mig
         /// </summary>
         /// <returns></returns>
         public static string GetCurrentAccountID()                  => AccountID;
+
+        public static void SetCurrentAccountID(string accountId)
+        {
+            if (!string.IsNullOrWhiteSpace(accountId))
+            {
+                AccountID = accountId.Trim();
+            }
+        }
 
 
     }

@@ -21,18 +21,25 @@ namespace Mig.Core.TaskPattern
             if (string.IsNullOrEmpty(saveZipPath) || string.IsNullOrEmpty(extractPath))
             {
                 Debug.Log($"You must set saveZipPath to extractPath before Unzip");
-                this.m_taskCallback?.Invoke(false);
+                Fail();
                 return;
             }
 
-            await Task.Run(() =>
+            try
             {
-                ZipUtility.UncompressFromZip(saveZipPath, string.Empty, extractPath);
-            });
+                await Task.Run(() =>
+                {
+                    ZipUtility.UncompressFromZip(saveZipPath, string.Empty, extractPath);
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Mig] Failed to unzip {saveZipPath}: {ex.Message}");
+                Fail();
+                return;
+            }
 
-            this.m_taskCallback?.Invoke(true);
-
-            base.Execute();
+            Continue();
         }
 
     }

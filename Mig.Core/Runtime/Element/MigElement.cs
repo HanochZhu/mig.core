@@ -1,8 +1,6 @@
 using Newtonsoft.Json;
 using System;
 using UnityEngine;
-using Mig.Core;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 
 namespace Mig.Core
@@ -66,6 +64,18 @@ namespace Mig.Core
         /// <summary>
         /// if we select current step snapshot, the fast way to apply all state is apply all element
         /// </summary>
+        public void ReleaseIfUnused()
+        {
+            OperateCount--;
+            if (OperateCount > 0 || Wrapper == null)
+            {
+                return;
+            }
+
+            Wrapper.RemoveElement(this);
+            Wrapper = null;
+        }
+
         public abstract void Apply();
 
         public abstract void Record();

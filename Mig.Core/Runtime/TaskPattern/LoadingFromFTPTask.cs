@@ -25,7 +25,7 @@ namespace Mig.Core.TaskPattern
             if (string.IsNullOrEmpty(downloadAddress) || string.IsNullOrEmpty(saveZipPath))
             {
                 Debug.LogWarning($"You must set downloadAddress to saveZipPath before download");
-                m_taskCallback?.Invoke(false);
+                Fail();
                 return;
             }
             var result = await FTPClient.DownloadToFileAsync(downloadAddress, saveZipPath, true);
@@ -33,11 +33,11 @@ namespace Mig.Core.TaskPattern
             if (!result)
             {
                 Debug.LogError($"Failed to download file {downloadAddress} to {saveZipPath}");
-                m_taskCallback?.Invoke(false);
+                Fail();
                 return;
             }
 
-            base.Execute();
+            Continue();
         }
 
     }
